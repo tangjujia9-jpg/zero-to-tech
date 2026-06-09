@@ -41,6 +41,115 @@ Uncaught ReferenceError: anime is not defined
 
 实验做完，记得把两行调回原顺序。
 
+## 自己动手：把它改造成模块化版本
+
+下面这五步，就是课件里带你做的那次改造。你也可以**对照着自己手动改一遍**——代码都给你了，逐个粘进去就行（不用自己写）。
+
+### 第一步：改 `cards.js`，给它模块化
+
+把 `js/cards.js` 的内容**整个替换**成：
+
+```javascript
+import { animate, stagger } from "https://cdn.jsdelivr.net/npm/animejs@4/+esm";
+
+export function initCardsAnim() {
+  animate(".card", {
+    opacity: [0, 1],
+    translateY: [24, 0],
+    delay: stagger(120),
+    duration: 700,
+    ease: "outBack",
+  });
+}
+```
+
+- 顶上 `import`：明文声明"我要用 anime.js 里的 `animate` 和 `stagger`"（注意网址末尾的 `+esm`，这是 anime.js 的 **ES 模块版本**）。
+- `export`：把这个函数对外开放，让别的文件能 import 它。
+
+### 第二步：改 `score.js`，给它也模块化（顺手升级动画）
+
+把 `js/score.js` 的内容**整个替换**成：
+
+```javascript
+import { animate, scrambleText } from "https://cdn.jsdelivr.net/npm/animejs@4/+esm";
+
+export function initScoreAnim() {
+  var btn = document.querySelector(".primary-button");
+  var scoreEl = document.querySelector("[data-score]");
+  if (!btn || !scoreEl) return;
+
+  btn.addEventListener("click", function () {
+    animate(scoreEl, {
+      innerHTML: scrambleText(),
+      duration: 1500,
+    });
+  });
+}
+```
+
+- 套路和第一步一样：上面 `import`、下面 `export`。
+- 顺手把原来 `setInterval` 手写的数字滚动，换成了 anime.js 的 `scrambleText` 特效（这个特效只在 ES 模块版本里才有）。
+
+### 第三步：改 `nav.js`，给它也模块化
+
+把 `js/nav.js` 的内容**整个替换**成：
+
+```javascript
+export function initNav() {
+  var path = location.pathname.split("/").pop() || "index.html";
+  var links = document.querySelectorAll(".nav-link");
+  for (var i = 0; i < links.length; i++) {
+    var href = links[i].getAttribute("href");
+    if (href === path) links[i].classList.add("active");
+    else links[i].classList.remove("active");
+  }
+}
+```
+
+- 对比一下改造前后：**只有头尾变了**——外层的 `(function () { ... })()` 立即执行包裹，换成了 `export function initNav() { ... }`，中间逻辑一字未改。
+- 模块化只管"怎么对外暴露"，不会逼你改写内部逻辑。
+
+### 第四步：新建 `main.js`，作为整个项目的总入口
+
+在 `js/` 目录下**新建一个文件** `js/main.js`，写入：
+
+```javascript
+import { initNav } from "./nav.js";
+import { initCardsAnim } from "./cards.js";
+import { initScoreAnim } from "./score.js";
+
+initNav();
+initCardsAnim();
+initScoreAnim();
+```
+
+- 它把前三个文件 `export` 出来的函数分别 `import` 进来，再挨个调用一遍。
+- 说白了，它就是整个页面的"总开关"。
+
+### 第五步：改两个 HTML，把四行 `<script>` 收成一行
+
+打开 `index.html`，把底部那四行 `<script>`：
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/animejs@4/lib/anime.iife.min.js"></script>
+<script src="js/cards.js"></script>
+<script src="js/score.js"></script>
+<script src="js/nav.js"></script>
+```
+
+**整个删掉，换成一行**：
+
+```html
+<script type="module" src="js/main.js"></script>
+```
+
+`text-lab.html` 那边**也有同样的四行**，照样删掉、换成这一行。
+
+> 改完之后，**别再双击 `index.html` 打开了**——ES 模块必须通过"服务器"提供才能加载，浏览器不允许 `file://` 直接打开（会白屏 + CORS 报错）。
+> 把项目部署到模块 3.5 那台 Nginx 服务器上（push → 服务器 pull → 指向它），再用公网 IP 访问，就能看到改造后的效果了。
+
+改完这五步，这份代码就和 **4.2 那一节的起点 demo** 结构一致了。
+
 ## 这一节最该带走的一句话
 
 > 项目长大了，"全堆在一起 + 手排 `<script>` 顺序 + 全靠 window 全局"的旧组织方式撑不住了。
