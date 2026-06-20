@@ -105,7 +105,7 @@ cd zero-to-tech-demos/zero-to-tech-4-3
 ```
 改造之后：
 ```html
-            <article class="…result-panel…card">…</article>
+            <div id="result-root" class="panel-half"></div>
 ```
 
 底部原来的 `js/main.js` 留着，再加一行 `<script type="module" src="/src/result.jsx"></script>`，如下所示：
