@@ -16,6 +16,11 @@
   - 跟着这一节的课件，把 4.2 那个 vanilla 项目，一拍一拍改造成它
   - 这是个 React / Vite 工程，**不能双击打开**，要 `npm install` 后 `npm run dev`（详见它自己的 README）
 
+- [`zero-to-tech-4-4/`](./zero-to-tech-4-4) —— **模块 4.4：让数据驱动界面**
+  - 在 4.3 React 版基础上又往前推三步：数据抽进 `src/data/site.js`、输入框接上 state、路由改用 URL
+  - 跟着这一节的课件，把你的 4.3 项目一步步改成它
+  - 同样是 React / Vite 工程，`npm install` 后 `npm run dev`（详见它自己的 README）
+
 ## 怎么用
 
 **在线浏览**：点上面的链接，在 GitHub web 界面里看代码。
@@ -32,4 +37,4 @@ cd zero-to-tech-demos/zero-to-tech-4-1
 
 ## 后续
 
-模块 4.2 不需要单独的 demo；4.3 已加入；4.4 ~ 4.6 的 demo 会随着课件发布陆续补上。
+模块 4.2 不需要单独的 demo；4.3、4.4 已加入；后续 demo 会随着课件发布陆续补上。
